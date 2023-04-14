@@ -9,8 +9,8 @@ pub struct PrimitiveArray<T> {
     /// The actual data of this array
     data: Vec<T>,
 
-    /// The null bitmap for this array, which indicates whether an element at
-    /// `i` is null
+    /// The bitmap for this array
+    /// If the bit is set, the corresponding value is not null.
     bitmap: BitVec,
 }
 
@@ -117,7 +117,6 @@ pub struct StringArrayBuilder {
     data: Vec<u8>,
     bitmap: BitVec,
     offsets: Vec<usize>,
-    cur_offset: usize,
 }
 
 impl ArrayBuilder for StringArrayBuilder {
@@ -131,7 +130,6 @@ impl ArrayBuilder for StringArrayBuilder {
             data: Vec::new(),
             bitmap: BitVec::with_capacity(capacity),
             offsets,
-            cur_offset: 0,
         }
     }
 
@@ -139,24 +137,19 @@ impl ArrayBuilder for StringArrayBuilder {
         match item {
             Some(item) => {
                 let bytes = item.to_string().into_bytes();
-                let len = bytes.len();
 
                 self.bitmap.push(true);
+                self.offsets.push(self.data.len());
                 self.data.extend(bytes);
-                self.offsets.push(self.cur_offset);
-
-                self.cur_offset += len;
             }
             None => {
                 self.bitmap.push(false);
-                self.offsets.push(self.cur_offset);
+                self.offsets.push(self.data.len());
             }
         }
     }
 
-    fn finish(mut self) -> Self::Array {
-        self.offsets.push(self.cur_offset);
-
+    fn finish(self) -> Self::Array {
         assert_eq!(self.bitmap.len() + 1, self.offsets.len());
 
         StringArray {

@@ -1,7 +1,5 @@
-use crate::{
-    array_impl::{Int32Array, StringArray},
-    Array, Scalar, ScalarRef,
-};
+use crate::prelude::*;
+use crate::{array_impl::StringArray, Array, Scalar, ScalarRef};
 
 macro_rules! impl_scalar_dispatch {
     ($( { $Abc:ident, $abc:ident, $AbcArray:ty, $AbcArrayBuilder:ty, $Owned:ty, $Ref:ty } ),*) => {
@@ -114,22 +112,27 @@ macro_rules! impl_array_dispatch {
     };
 }
 
-macro_rules! for_all_impl_macros {
+macro_rules! impl_for_all {
     ($macro:tt) => {
         $macro! {
+            { Int16, int16, Int16Array, Int16ArrayBuilder, i16, i16 },
             { Int32, int32, Int32Array, Int32ArrayBuilder, i32, i32 },
+            { Int64, int64, Int64Array, Int64ArrayBuilder, i64, i64 },
+            { Float32, float32, Float32Array, Float32ArrayBuilder, f32, f32 },
+            { Float64, float64, Float64Array, Float64ArrayBuilder, f64, f64 },
+            { Boolean, boolean, BooleanArray, BooleanArrayBuilder, bool, bool },
             { String, string, StringArray, StringArrayBuilder, String, &'a str }
         }
     };
 }
 
-for_all_impl_macros! {impl_scalar_dispatch}
-for_all_impl_macros! {impl_scalar_ref_dispatch}
-for_all_impl_macros! {impl_array_dispatch}
+impl_for_all! {impl_scalar_dispatch}
+impl_for_all! {impl_scalar_ref_dispatch}
+impl_for_all! {impl_array_dispatch}
 
 #[cfg(test)]
 mod test {
-    use crate::{array_impl::Int32ArrayBuilder, ArrayBuilder};
+    use crate::ArrayBuilder;
 
     use super::*;
 

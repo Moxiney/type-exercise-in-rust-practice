@@ -5,6 +5,11 @@ use crate::{
     PrimitiveType, Scalar, ScalarRef,
 };
 
+pub type Int32Array = PrimitiveArray<i32>;
+// pub type DoubleArray = PrimitiveArray<f64>;
+pub type Int32ArrayBuilder = PrimitiveArrayBuilder<i32>;
+// pub type DoubleArrayBuilder = PrimitiveArrayBuilder<f64>;
+
 pub struct PrimitiveArray<T> {
     /// The actual data of this array
     data: Vec<T>,

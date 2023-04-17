@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use crate::prelude::*;
 use crate::{array_impl::StringArray, Array, Scalar, ScalarRef};
 

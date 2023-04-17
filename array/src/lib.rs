@@ -1,5 +1,6 @@
 // Trait definition
 mod array;
+mod data_type;
 mod scalar;
 
 // Trait implementaion
@@ -11,10 +12,13 @@ mod dispatch;
 
 /// Expression definition and implementation
 mod expression;
+mod expression_impl;
 
 mod test;
 
 pub use array::*;
+pub use data_type::DataType;
+pub use expression::*;
 pub use scalar::*;
 
 pub mod prelude {

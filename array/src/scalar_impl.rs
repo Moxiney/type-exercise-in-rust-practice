@@ -12,9 +12,12 @@ impl<T: PrimitiveType> Scalar for T {
     fn as_scalar_ref<'a>(&'a self) -> Self::RefType<'a> {
         *self
     }
+    fn upcast_to<'a, 'b: 'a>(ref_item: Self::RefType<'b>) -> Self::RefType<'a> {
+        ref_item
+    }
 }
 
-impl<'a, T: PrimitiveType + Debug> ScalarRef<'a> for T {
+impl<'a, T: PrimitiveType> ScalarRef<'a> for T {
     type ScalarType = T;
     type ArrayType = PrimitiveArray<T>;
 
@@ -36,7 +39,10 @@ impl Scalar for String {
     type ArrayTpye = StringArray;
 
     fn as_scalar_ref<'a>(&'a self) -> Self::RefType<'a> {
-        todo!()
+        &self
+    }
+    fn upcast_to<'a, 'b: 'a>(ref_item: Self::RefType<'b>) -> Self::RefType<'a> {
+        ref_item
     }
 }
 

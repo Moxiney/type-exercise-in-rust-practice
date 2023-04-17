@@ -3,6 +3,7 @@ use crate::{array_impl::StringArray, Array, Scalar, ScalarRef};
 
 macro_rules! impl_scalar_dispatch {
     ($( { $Abc:ident, $abc:ident, $AbcArray:ty, $AbcArrayBuilder:ty, $Owned:ty, $Ref:ty } ),*) => {
+        #[derive(Debug, PartialEq)]
         pub enum ScalarImpl {
             $( $Abc($Owned) ),*
         }
@@ -38,6 +39,7 @@ macro_rules! impl_scalar_dispatch {
 
 macro_rules! impl_scalar_ref_dispatch {
     ($( { $Abc:ident, $abc:ident, $AbcArray:ty, $AbcArrayBuilder:ty, $Owned:ty, $Ref:ty } ),*) => {
+        #[derive(Debug, PartialEq)]
         pub enum ScalarRefImpl<'a> {
             $( $Abc($Ref) ),*
         }
@@ -103,6 +105,17 @@ macro_rules! impl_array_dispatch {
 
                 fn try_from(value: ArrayImpl) -> Result<Self, Self::Error> {
                     match value {
+                        ArrayImpl::$Abc(array) => Ok(array),
+                        _ => Err(()),
+                    }
+                }
+            }
+
+            impl<'a> TryFrom<&'a ArrayImpl> for &'a $AbcArray {
+                type Error = ();
+
+                fn try_from(array: &'a ArrayImpl) -> Result<&'a $AbcArray, Self::Error> {
+                    match array {
                         ArrayImpl::$Abc(array) => Ok(array),
                         _ => Err(()),
                     }

@@ -12,6 +12,7 @@ pub trait Scalar: std::fmt::Debug + Clone + Send + Sync + 'static {
     type ArrayTpye: for<'a> Array<RefItem<'a> = Self::RefType<'a>, OwnedItem = Self>;
 
     fn as_scalar_ref<'a>(&'a self) -> Self::RefType<'a>;
+    fn upcast_to<'short, 'long: 'short>(long: Self::RefType<'long>) -> Self::RefType<'short>;
 }
 
 /// A trait for types that is a reference of a scalar.

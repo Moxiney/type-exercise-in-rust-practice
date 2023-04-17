@@ -76,6 +76,7 @@ where
     }
 }
 
+#[derive(Debug)]
 pub struct StringArray {
     /// The fallten data of strings.
     data: Vec<u8>,
@@ -96,6 +97,14 @@ impl StringArray {
         } else {
             None
         }
+    }
+
+    pub fn from_slice(data: &[Option<&str>]) -> Self {
+        let mut builder = <Self as Array>::Builder::with_capacity(data.len());
+        for val in data {
+            builder.push(*val);
+        }
+        builder.finish()
     }
 }
 
@@ -139,8 +148,8 @@ impl ArrayBuilder for StringArrayBuilder {
                 let bytes = item.to_string().into_bytes();
 
                 self.bitmap.push(true);
-                self.offsets.push(self.data.len());
                 self.data.extend(bytes);
+                self.offsets.push(self.data.len());
             }
             None => {
                 self.bitmap.push(false);
@@ -157,5 +166,27 @@ impl ArrayBuilder for StringArrayBuilder {
             offset: self.offsets,
             bitmap: self.bitmap,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn string_array_test() {
+        let str_array = StringArray::from_slice(&[Some("1"), Some("2"), None]);
+
+        dbg!(&str_array);
+
+        assert_eq!(str_array.get(0), Some("1"));
+        assert_eq!(str_array.get(1), Some("2"));
+        assert_eq!(str_array.get(2), None);
+
+        let mut iter = str_array.iter();
+        assert_eq!(iter.next(), Some(Some("1")));
+        assert_eq!(iter.next(), Some(Some("2")));
+        assert_eq!(iter.next(), Some(None));
+        assert_eq!(iter.next(), None);
     }
 }
